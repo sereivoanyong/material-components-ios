@@ -1,8 +1,7 @@
 workspace 'MDCCatalog.xcworkspace'
 project 'MDCCatalog.xcodeproj'
 
-# TODO: Uncomment line below and switch from legacy build system when Cocoapods 1.6 goes out of beta
-# install! 'cocoapods', :disable_input_output_paths => true
+install! 'cocoapods', :disable_input_output_paths => true
 
 target "MDCCatalog" do
   platform :ios, '11.0'
@@ -11,13 +10,11 @@ target "MDCCatalog" do
   pod 'MaterialComponents', :path => '../', :testspecs => [
     'ActionSheet/UnitTests',
     'ActivityIndicator/UnitTests',
-    'AnimationTiming/UnitTests',
     'AppBar/UnitTests',
     'Banner/UnitTests',
     'BottomAppBar/UnitTests',
     'BottomNavigation/UnitTests',
     'BottomNavigation+BottomNavigationController/UnitTests',
-    'BottomNavigation+Theming/UnitTests',
     'BottomSheet/UnitTests',
     'ButtonBar/UnitTests',
     'Buttons/UnitTests',
@@ -55,7 +52,6 @@ target "MDCCatalog" do
     'schemes/Container/UnitTests',
     'schemes/Shape/UnitTests',
     'schemes/Typography/UnitTests',
-    'ShadowElevations/UnitTests',
     'ShadowLayer/UnitTests',
     'ShapeLibrary/UnitTests',
     'Shapes/UnitTests',
@@ -64,7 +60,6 @@ target "MDCCatalog" do
     'Tabs/UnitTests',
     'Tabs+Theming/UnitTests',
     'Tabs+TabBarView/UnitTests',
-    'TextFields/UnitTests',
     'TextControls+BaseTextAreas/UnitTests',
     'TextControls+BaseTextFields/UnitTests',
     'TextControls+FilledTextAreas/UnitTests',
