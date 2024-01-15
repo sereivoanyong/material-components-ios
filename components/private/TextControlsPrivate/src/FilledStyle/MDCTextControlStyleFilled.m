@@ -21,8 +21,6 @@
 #include "MaterialAvailability.h"
 #import "UIBezierPath+MDCTextControlStyle.h"
 
-static const CGFloat kDefaultFilledStyleTopCornerRadius = (CGFloat)4.0;
-
 @interface MDCTextControlStyleFilled () <CAAnimationDelegate>
 
 @property(strong, nonatomic) CAShapeLayer *filledSublayer;
@@ -45,14 +43,13 @@ static const CGFloat kDefaultFilledStyleTopCornerRadius = (CGFloat)4.0;
 #pragma mark Setup
 
 - (void)commonMDCTextControlStyleFilledInit {
-  self.topCornerRadius = kDefaultFilledStyleTopCornerRadius;
   [self setUpFilledBackgroundColors];
   [self setUpFilledBackgroundSublayer];
 }
 
 - (void)setUpFilledBackgroundColors {
   self.filledBackgroundColors = [NSMutableDictionary new];
-  UIColor *filledBackgroundColor = [UIColor secondarySystemBackgroundColor];
+  UIColor *filledBackgroundColor = [UIColor clearColor];
 
   self.filledBackgroundColors[@(MDCTextControlStateNormal)] = filledBackgroundColor;
   self.filledBackgroundColors[@(MDCTextControlStateEditing)] = filledBackgroundColor;
@@ -66,11 +63,11 @@ static const CGFloat kDefaultFilledStyleTopCornerRadius = (CGFloat)4.0;
 
 #pragma mark Accessors
 
-- (UIColor *)filledBackgroundColorForState:(MDCTextControlState)state {
+- (nullable UIColor *)filledBackgroundColorForState:(MDCTextControlState)state {
   return self.filledBackgroundColors[@(state)];
 }
 
-- (void)setFilledBackgroundColor:(nonnull UIColor *)filledBackgroundColor
+- (void)setFilledBackgroundColor:(nullable UIColor *)filledBackgroundColor
                         forState:(MDCTextControlState)state {
   self.filledBackgroundColors[@(state)] = filledBackgroundColor;
 }
@@ -121,12 +118,12 @@ static const CGFloat kDefaultFilledStyleTopCornerRadius = (CGFloat)4.0;
                          state:(MDCTextControlState)state
                 containerFrame:(CGRect)containerFrame
              animationDuration:(NSTimeInterval)animationDuration {
-  self.filledSublayer.fillColor = [self.filledBackgroundColors[@(state)] CGColor];
+  self.filledSublayer.fillColor = ([self filledBackgroundColorForState:state] ?: view.tintColor).CGColor;
   CGFloat containerHeight = CGRectGetMaxY(containerFrame);
   UIBezierPath *filledSublayerBezier =
       [self filledSublayerPathWithTextFieldBounds:view.bounds
                                   containerHeight:containerHeight
-                                  topCornerRadius:self.topCornerRadius];
+                              outlineCornerRadius:self.outlineCornerRadius];
   self.filledSublayer.path = filledSublayerBezier.CGPath;
   if (self.filledSublayer.superlayer != view.layer) {
     [view.layer insertSublayer:self.filledSublayer atIndex:0];
@@ -137,43 +134,42 @@ static const CGFloat kDefaultFilledStyleTopCornerRadius = (CGFloat)4.0;
 
 - (UIBezierPath *)filledSublayerPathWithTextFieldBounds:(CGRect)viewBounds
                                         containerHeight:(CGFloat)containerHeight
-                                        topCornerRadius:(CGFloat)topRadius {
+                                    outlineCornerRadius:(CGFloat)outlineCornerRadius {
   UIBezierPath *path = [[UIBezierPath alloc] init];
-  CGFloat bottomRadius = 0;
   CGFloat textFieldWidth = CGRectGetWidth(viewBounds);
-  CGFloat sublayerMinY = 0;
-  CGFloat sublayerMaxY = containerHeight;
+  CGFloat sublayerMinY = 0.0;
+  CGFloat sublayerMaxY = CGRectGetHeight(viewBounds);
 
-  CGPoint startingPoint = CGPointMake(topRadius, sublayerMinY);
-  CGPoint topRightCornerPoint1 = CGPointMake(textFieldWidth - topRadius, sublayerMinY);
+  CGPoint startingPoint = CGPointMake(outlineCornerRadius, sublayerMinY);
+  CGPoint topRightCornerPoint1 = CGPointMake(textFieldWidth - outlineCornerRadius, sublayerMinY);
   [path moveToPoint:startingPoint];
   [path addLineToPoint:topRightCornerPoint1];
 
-  CGPoint topRightCornerPoint2 = CGPointMake(textFieldWidth, sublayerMinY + topRadius);
+  CGPoint topRightCornerPoint2 = CGPointMake(textFieldWidth, sublayerMinY + outlineCornerRadius);
   [path mdc_addTopRightCornerFromPoint:topRightCornerPoint1
                                toPoint:topRightCornerPoint2
-                            withRadius:topRadius];
+                            withRadius:outlineCornerRadius];
 
-  CGPoint bottomRightCornerPoint1 = CGPointMake(textFieldWidth, sublayerMaxY - bottomRadius);
-  CGPoint bottomRightCornerPoint2 = CGPointMake(textFieldWidth - bottomRadius, sublayerMaxY);
+  CGPoint bottomRightCornerPoint1 = CGPointMake(textFieldWidth, sublayerMaxY - outlineCornerRadius);
+  CGPoint bottomRightCornerPoint2 = CGPointMake(textFieldWidth - outlineCornerRadius, sublayerMaxY);
   [path addLineToPoint:bottomRightCornerPoint1];
   [path mdc_addBottomRightCornerFromPoint:bottomRightCornerPoint1
                                   toPoint:bottomRightCornerPoint2
-                               withRadius:bottomRadius];
+                               withRadius:outlineCornerRadius];
 
-  CGPoint bottomLeftCornerPoint1 = CGPointMake(bottomRadius, sublayerMaxY);
-  CGPoint bottomLeftCornerPoint2 = CGPointMake(0, sublayerMaxY - bottomRadius);
+  CGPoint bottomLeftCornerPoint1 = CGPointMake(outlineCornerRadius, sublayerMaxY);
+  CGPoint bottomLeftCornerPoint2 = CGPointMake(0.0, sublayerMaxY - outlineCornerRadius);
   [path addLineToPoint:bottomLeftCornerPoint1];
   [path mdc_addBottomLeftCornerFromPoint:bottomLeftCornerPoint1
                                  toPoint:bottomLeftCornerPoint2
-                              withRadius:bottomRadius];
+                              withRadius:outlineCornerRadius];
 
-  CGPoint topLeftCornerPoint1 = CGPointMake(0, sublayerMinY + topRadius);
-  CGPoint topLeftCornerPoint2 = CGPointMake(topRadius, sublayerMinY);
+  CGPoint topLeftCornerPoint1 = CGPointMake(0.0, sublayerMinY + outlineCornerRadius);
+  CGPoint topLeftCornerPoint2 = CGPointMake(outlineCornerRadius, sublayerMinY);
   [path addLineToPoint:topLeftCornerPoint1];
   [path mdc_addTopLeftCornerFromPoint:topLeftCornerPoint1
                               toPoint:topLeftCornerPoint2
-                           withRadius:topRadius];
+                           withRadius:outlineCornerRadius];
 
   return path;
 }

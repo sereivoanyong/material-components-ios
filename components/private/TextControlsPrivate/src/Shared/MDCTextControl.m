@@ -17,7 +17,7 @@
 
 #import "MDCTextControl.h"
 
-const CGFloat kMDCTextControlDefaultAnimationDuration = (CGFloat)0.15;
+const NSTimeInterval kMDCTextControlDefaultAnimationDuration = 0.15;
 
 UIFont *_Nonnull MDCTextControlDefaultUITextFieldFont(void) {
   return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];

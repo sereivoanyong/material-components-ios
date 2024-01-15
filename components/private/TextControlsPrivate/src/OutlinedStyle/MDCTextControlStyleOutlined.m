@@ -24,9 +24,9 @@
 #import "MDCTextControlLabelSupport.h"
 #import "UIBezierPath+MDCTextControlStyle.h"
 
-static const CGFloat kDefaultOutlinedContainerStyleCornerRadius = (CGFloat)4.0;
-static const CGFloat kFloatingLabelOutlineSidePadding = (CGFloat)5.0;
-static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
+static const CGFloat kDefaultOutlinedContainerStyleCornerRadius = 6.0;
+static const CGFloat kFloatingLabelOutlineSidePadding = 5.0;
+static const CGFloat kFilledFloatingLabelScaleFactor = 0.75;
 
 @interface MDCTextControlStyleOutlined ()
 
@@ -59,35 +59,48 @@ static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
 
 - (void)setUpOutlineColors {
   self.outlineColors = [NSMutableDictionary new];
-  UIColor *outlineColor = [UIColor labelColor];
+  UIColor *outlineColor;
+  if (@available(iOS 13.0, *)) {
+    outlineColor = [UIColor labelColor];
+  } else {
+    outlineColor = [UIColor blackColor];
+  }
   self.outlineColors[@(MDCTextControlStateNormal)] = outlineColor;
-  self.outlineColors[@(MDCTextControlStateEditing)] = outlineColor;
+  self.outlineColors[@(MDCTextControlStateEditing)] = nil; // Uses tintColor
   self.outlineColors[@(MDCTextControlStateDisabled)] =
-      [outlineColor colorWithAlphaComponent:(CGFloat)0.60];
+      [outlineColor colorWithAlphaComponent:0.60];
 }
 
 - (void)setUpOutlineLineWidths {
   self.outlineLineWidths = [NSMutableDictionary new];
-  self.outlineLineWidths[@(MDCTextControlStateNormal)] = @(1);
-  self.outlineLineWidths[@(MDCTextControlStateEditing)] = @(2);
-  self.outlineLineWidths[@(MDCTextControlStateDisabled)] = @(1);
+  self.outlineLineWidths[@(MDCTextControlStateNormal)] = @(1.0);
+  self.outlineLineWidths[@(MDCTextControlStateEditing)] = @(1.0);
+  self.outlineLineWidths[@(MDCTextControlStateDisabled)] = @(1.0);
 }
 
 - (void)setUpOutlineSublayer {
   self.outlinedSublayer = [[CAShapeLayer alloc] init];
   self.outlinedSublayer.fillColor = [UIColor clearColor].CGColor;
   self.outlinedSublayer.lineWidth =
-      (CGFloat)[self.outlineLineWidths[@(MDCTextControlStateNormal)] doubleValue];
+      self.outlineLineWidths[@(MDCTextControlStateNormal)].doubleValue;
 }
 
 #pragma mark Accessors
 
-- (UIColor *)outlineColorForState:(MDCTextControlState)state {
+- (void)setOutlineColor:(nullable UIColor *)outlineColor forState:(MDCTextControlState)state {
+  self.outlineColors[@(state)] = outlineColor;
+}
+
+- (nullable UIColor *)outlineColorForState:(MDCTextControlState)state {
   return self.outlineColors[@(state)];
 }
 
-- (void)setOutlineColor:(nonnull UIColor *)outlineColor forState:(MDCTextControlState)state {
-  self.outlineColors[@(state)] = outlineColor;
+- (void)setOutlineLineWidth:(CGFloat)outlineLineWidth forState:(MDCTextControlState)state {
+  self.outlineLineWidths[@(state)] = @(outlineLineWidth);
+}
+
+- (CGFloat)outlineLineWidthForState:(MDCTextControlState)state {
+  return self.outlineLineWidths[@(state)].doubleValue;
 }
 
 #pragma mark MDCTextControlStyle
@@ -97,7 +110,7 @@ static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
   CGRect normalLabelFrame = textControl.normalLabelFrame;
   CGRect floatingLabelFrame = textControl.floatingLabelFrame;
   CGFloat containerHeight = CGRectGetHeight(textControl.containerFrame);
-  CGFloat lineWidth = (CGFloat)self.outlineLineWidths[@(textControl.textControlState)].doubleValue;
+  CGFloat lineWidth = [self outlineLineWidthForState:textControl.textControlState];
   UIBezierPath *outlinePath =
       [MDCTextControlStyleOutlined outlinePathWithViewBounds:textControl.bounds
                                             normalLabelFrame:normalLabelFrame
@@ -106,16 +119,17 @@ static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
                                                    lineWidth:lineWidth
                                                 cornerRadius:self.outlineCornerRadius
                                                labelBehavior:textControl.labelBehavior
-                                               labelPosition:textControl.labelPosition];
-  CGColorRef strokeColor = (self.outlineColors[@(textControl.textControlState)]).CGColor;
+                                               labelPosition:textControl.labelPosition
+                                                       scale:textControl.traitCollection.displayScale];
+  CGColorRef strokeColor = ([self outlineColorForState:textControl.textControlState] ?: textControl.tintColor).CGColor;
   if (!CGColorEqualToColor(self.outlinedSublayer.strokeColor, strokeColor)) {
-    animationDuration = 0;
+    animationDuration = 0.0;
     self.outlinedSublayer.strokeColor = strokeColor;
   }
   [self applyOutlineTo:textControl
-            outlinePath:outlinePath
-       outlineLineWidth:lineWidth
-      animationDuration:animationDuration];
+           outlinePath:outlinePath
+      outlineLineWidth:lineWidth
+     animationDuration:animationDuration];
 }
 
 - (UIFont *)floatingFontWithNormalFont:(UIFont *)font {
@@ -160,7 +174,7 @@ static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
     [view.layer insertSublayer:self.outlinedSublayer atIndex:0];
   }
 
-  if (animationDuration <= 0) {
+  if (animationDuration <= 0.0) {
     [self.outlinedSublayer removeAllAnimations];
     self.outlinedSublayer.path = outlinePath.CGPath;
     self.outlinedSublayer.lineWidth = outlineLineWidth;
@@ -205,51 +219,52 @@ static const CGFloat kFilledFloatingLabelScaleFactor = (CGFloat)0.75;
                                   lineWidth:(CGFloat)lineWidth
                                cornerRadius:(CGFloat)radius
                               labelBehavior:(MDCTextControlLabelBehavior)labelBehavior
-                              labelPosition:(MDCTextControlLabelPosition)labelPosition {
+                              labelPosition:(MDCTextControlLabelPosition)labelPosition
+                                      scale:(CGFloat)scale {
   UIBezierPath *path = [[UIBezierPath alloc] init];
-  CGFloat textFieldWidth = CGRectGetWidth(viewBounds);
-  CGFloat halfOfFloatingLabelHeight = CGRectGetHeight(floatingLabelFrame) * 0.5f;
-  CGFloat sublayerMinY = halfOfFloatingLabelHeight;
-  CGFloat sublayerMaxY = containerHeight;
-  if (labelBehavior == MDCTextControlLabelBehaviorDisappears ||
-      labelPosition == MDCTextControlLabelPositionNone) {
-    sublayerMinY = 0.0f;
-  }
-
-  CGPoint startingPoint = CGPointMake(radius, sublayerMinY);
-  CGPoint topRightCornerPoint1 = CGPointMake(textFieldWidth - radius, sublayerMinY);
+  // We inset half of line width as the layer border is drawn half-in/out
+  CGFloat halfLineWidth = lineWidth / 2.0;
+  CGRect rect = CGRectInset(viewBounds, halfLineWidth, halfLineWidth);
+  radius = radius - halfLineWidth;
+  CGFloat sublayerMinY = CGRectGetMinY(floatingLabelFrame) <= 0.0 ? (round(CGRectGetMidY(floatingLabelFrame) * scale) / scale - halfLineWidth) : CGRectGetMinY(rect);
+  CGFloat sublayerMaxY = CGRectGetMaxY(rect);
+  
+  CGPoint startingPoint = CGPointMake(CGRectGetMinX(rect) + radius, sublayerMinY);
+  CGPoint topRightCornerPoint1 = CGPointMake(CGRectGetMaxX(rect) - radius, sublayerMinY);
   [path moveToPoint:startingPoint];
   if (labelPosition == MDCTextControlLabelPositionFloating) {
-    CGFloat leftLineBreak = CGRectGetMinX(floatingLabelFrame) - kFloatingLabelOutlineSidePadding;
-    CGFloat rightLineBreak = CGRectGetMaxX(floatingLabelFrame) + kFloatingLabelOutlineSidePadding;
-    [path addLineToPoint:CGPointMake(leftLineBreak, sublayerMinY)];
-    [path moveToPoint:CGPointMake(rightLineBreak, sublayerMinY)];
-    [path addLineToPoint:CGPointMake(rightLineBreak, sublayerMinY)];
+    if (CGRectGetMinY(floatingLabelFrame) <= 0.0) {
+      CGFloat leftLineBreak = CGRectGetMinX(floatingLabelFrame) - kFloatingLabelOutlineSidePadding;
+      CGFloat rightLineBreak = CGRectGetMaxX(floatingLabelFrame) + kFloatingLabelOutlineSidePadding;
+      [path addLineToPoint:CGPointMake(leftLineBreak, sublayerMinY)];
+      [path moveToPoint:CGPointMake(rightLineBreak, sublayerMinY)];
+      [path addLineToPoint:CGPointMake(rightLineBreak, sublayerMinY)];
+    }
   } else {
     [path addLineToPoint:topRightCornerPoint1];
   }
 
-  CGPoint topRightCornerPoint2 = CGPointMake(textFieldWidth, sublayerMinY + radius);
+  CGPoint topRightCornerPoint2 = CGPointMake(CGRectGetMaxX(rect), sublayerMinY + radius);
   [path mdc_addTopRightCornerFromPoint:topRightCornerPoint1
                                toPoint:topRightCornerPoint2
                             withRadius:radius];
 
-  CGPoint bottomRightCornerPoint1 = CGPointMake(textFieldWidth, sublayerMaxY - radius);
-  CGPoint bottomRightCornerPoint2 = CGPointMake(textFieldWidth - radius, sublayerMaxY);
+  CGPoint bottomRightCornerPoint1 = CGPointMake(CGRectGetMaxX(rect), sublayerMaxY - radius);
+  CGPoint bottomRightCornerPoint2 = CGPointMake(CGRectGetMaxX(rect) - radius, sublayerMaxY);
   [path addLineToPoint:bottomRightCornerPoint1];
   [path mdc_addBottomRightCornerFromPoint:bottomRightCornerPoint1
                                   toPoint:bottomRightCornerPoint2
                                withRadius:radius];
 
-  CGPoint bottomLeftCornerPoint1 = CGPointMake(radius, sublayerMaxY);
-  CGPoint bottomLeftCornerPoint2 = CGPointMake(0, sublayerMaxY - radius);
+  CGPoint bottomLeftCornerPoint1 = CGPointMake(CGRectGetMinX(rect) + radius, sublayerMaxY);
+  CGPoint bottomLeftCornerPoint2 = CGPointMake(CGRectGetMinX(rect), sublayerMaxY - radius);
   [path addLineToPoint:bottomLeftCornerPoint1];
   [path mdc_addBottomLeftCornerFromPoint:bottomLeftCornerPoint1
                                  toPoint:bottomLeftCornerPoint2
                               withRadius:radius];
 
-  CGPoint topLeftCornerPoint1 = CGPointMake(0, sublayerMinY + radius);
-  CGPoint topLeftCornerPoint2 = CGPointMake(radius, sublayerMinY);
+  CGPoint topLeftCornerPoint1 = CGPointMake(CGRectGetMinX(rect), sublayerMinY + radius);
+  CGPoint topLeftCornerPoint2 = CGPointMake(CGRectGetMinX(rect) + radius, sublayerMinY);
   [path addLineToPoint:topLeftCornerPoint1];
   [path mdc_addTopLeftCornerFromPoint:topLeftCornerPoint1
                               toPoint:topLeftCornerPoint2

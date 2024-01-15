@@ -18,6 +18,9 @@
 #import "MDCTextControlTextFieldSideViewAlignment.h"
 
 @interface MDCBaseTextFieldLayout ()
+
+@property(nonatomic, assign) CGFloat scale;
+
 @end
 
 @implementation MDCBaseTextFieldLayout
@@ -47,10 +50,12 @@
            assistiveLabelDrawPriority:
                (MDCTextControlAssistiveLabelDrawPriority)assistiveLabelDrawPriority
      customAssistiveLabelDrawPriority:(CGFloat)customAssistiveLabelDrawPriority
+                                scale:(CGFloat)scale
                                 isRTL:(BOOL)isRTL
                             isEditing:(BOOL)isEditing {
   self = [super init];
   if (self) {
+    self.scale = scale;
     [self calculateLayoutWithTextFieldSize:textFieldSize
                       positioningReference:positioningReference
             horizontalPositioningReference:horizontalPositioningReference
@@ -193,17 +198,15 @@
   CGFloat floatingLabelMaxY = floatingLabelMinY + floatingLabelHeight;
   CGFloat textRectMinYWithFloatingLabel =
       floatingLabelMaxY + positioningReference.paddingBetweenFloatingLabelAndEditingText;
-  CGFloat textRectCenterYWithFloatingLabel =
-      textRectMinYWithFloatingLabel + ((CGFloat)0.5 * textRectHeight);
-  CGFloat textRectMinYFloatingLabel =
-      (CGFloat)floor((double)(textRectCenterYWithFloatingLabel - (textRectHeight * (CGFloat)0.5)));
+  CGFloat textRectCenterYWithFloatingLabel = textRectMinYWithFloatingLabel + (0.5 * textRectHeight);
+  CGFloat textRectMinYFloatingLabel = textRectCenterYWithFloatingLabel - (textRectHeight * 0.5);
   CGRect textRectFloating =
       CGRectMake(textRectMinX, textRectMinYFloatingLabel, textRectWidth, textRectHeight);
 
   CGFloat containerHeight = shouldLayoutForFloatingLabel
                                 ? positioningReference.containerHeightWithFloatingLabel
                                 : positioningReference.containerHeightWithoutFloatingLabel;
-  CGFloat containerMidY = (CGFloat)0.5 * containerHeight;
+  CGFloat containerMidY = 0.5 * containerHeight;
   BOOL isFloatingLabel = labelPosition == MDCTextControlLabelPositionFloating;
   CGFloat textRectMidY =
       isFloatingLabel ? CGRectGetMidY(textRectFloating) : CGRectGetMidY(textRectNormal);
@@ -259,6 +262,7 @@
                    trailingEdgePadding:trailingEdgePadding
            paddingAboveAssistiveLabels:positioningReference.paddingAboveAssistiveLabels
            paddingBelowAssistiveLabels:positioningReference.paddingBelowAssistiveLabels
+                                 scale:self.scale
                                  isRTL:isRTL];
   self.assistiveLabelViewFrame = CGRectMake(0, containerHeight, textFieldWidth,
                                             self.assistiveLabelViewLayout.calculatedHeight);
@@ -292,7 +296,7 @@
 }
 
 - (CGFloat)minYForSubviewWithHeight:(CGFloat)height centerY:(CGFloat)centerY {
-  return (CGFloat)round((double)(centerY - ((CGFloat)0.5 * height)));
+  return round((centerY - (0.5 * height)) * self.scale) / self.scale;
 }
 
 - (BOOL)shouldDisplayClearButtonWithViewMode:(UITextFieldViewMode)viewMode
@@ -337,7 +341,7 @@
       rect = CGRectMake(originX, originY, size.width, size.height);
       break;
     case MDCTextControlLabelPositionNormal:
-      originY = textRectMidY - (0.5f * size.height);
+      originY = textRectMidY - (0.5 * size.height);
       if (isRTL) {
         originX = labelMaxX - size.width;
       } else {
@@ -352,7 +356,7 @@
 }
 
 - (CGFloat)textHeightWithFont:(UIFont *)font {
-  return (CGFloat)ceil((double)font.lineHeight);
+  return ceil(font.lineHeight * self.scale) / self.scale;
 }
 
 - (CGFloat)calculatedHeight {
@@ -361,7 +365,7 @@
   if (assistiveLabelViewMaxY > maxY) {
     maxY = assistiveLabelViewMaxY;
   }
-  return ceil(maxY);
+  return ceil(maxY * self.scale) / self.scale;
 }
 
 - (CGRect)labelFrameWithLabelPosition:(MDCTextControlLabelPosition)labelPosition {

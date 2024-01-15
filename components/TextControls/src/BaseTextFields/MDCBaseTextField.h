@@ -80,7 +80,7 @@
  @param floatingLabelColor The UIColor for the given state.
  @param state The MDCTextControlState.
  */
-- (void)setFloatingLabelColor:(nonnull UIColor *)floatingLabelColor
+- (void)setFloatingLabelColor:(nullable UIColor *)floatingLabelColor
                      forState:(MDCTextControlState)state
     NS_SWIFT_NAME(setFloatingLabelColor(_:for:));
 
@@ -90,7 +90,7 @@
  when it's above the text field.
  @param state The MDCTextControlState.
  */
-- (nonnull UIColor *)floatingLabelColorForState:(MDCTextControlState)state;
+- (nullable UIColor *)floatingLabelColorForState:(MDCTextControlState)state;
 
 /**
  Sets the normal label color for a given state.

@@ -26,7 +26,7 @@
 
 UIFont *_Nonnull MDCTextControlDefaultUITextFieldFont(void);
 
-FOUNDATION_EXTERN const CGFloat kMDCTextControlDefaultAnimationDuration;
+FOUNDATION_EXTERN const NSTimeInterval kMDCTextControlDefaultAnimationDuration;
 
 @protocol MDCTextControlStyle;
 

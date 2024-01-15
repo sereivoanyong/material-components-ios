@@ -124,7 +124,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 - (void)setUpAssistiveLabels {
   self.assistiveLabelDrawPriority = MDCTextControlAssistiveLabelDrawPriorityTrailing;
   self.assistiveLabelView = [[MDCTextControlAssistiveLabelView alloc] init];
-  CGFloat assistiveFontSize = round([UIFont systemFontSize] * (CGFloat)0.75);
+  CGFloat assistiveFontSize = [UIFont systemFontSize] * 0.75;
   UIFont *assistiveFont = [UIFont systemFontOfSize:assistiveFontSize];
   self.assistiveLabelView.leadingAssistiveLabel.font = assistiveFont;
   self.assistiveLabelView.trailingAssistiveLabel.font = assistiveFont;
@@ -289,7 +289,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 - (CGRect)adjustTextAreaFrame:(CGRect)textRect
     withParentClassTextAreaFrame:(CGRect)parentClassTextAreaFrame {
   CGFloat systemDefinedHeight = CGRectGetHeight(parentClassTextAreaFrame);
-  CGFloat minY = CGRectGetMidY(textRect) - (systemDefinedHeight * (CGFloat)0.5);
+  CGFloat minY = CGRectGetMidY(textRect) - (systemDefinedHeight * 0.5);
   return CGRectMake(CGRectGetMinX(textRect), minY, CGRectGetWidth(textRect), systemDefinedHeight);
 }
 
@@ -322,6 +322,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
                 trailingAssistiveLabel:self.assistiveLabelView.trailingAssistiveLabel
             assistiveLabelDrawPriority:self.assistiveLabelDrawPriority
       customAssistiveLabelDrawPriority:clampedCustomAssistiveLabelDrawPriority
+                                 scale:self.traitCollection.displayScale
                                  isRTL:self.shouldLayoutForRTL
                              isEditing:self.isEditing];
 }
@@ -331,15 +332,15 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
       self.containerStyle.horizontalPositioningReference;
   if (self.leadingEdgePaddingOverride) {
     horizontalPositioningReference.leadingEdgePadding =
-        (CGFloat)[self.leadingEdgePaddingOverride doubleValue];
+        self.leadingEdgePaddingOverride.doubleValue;
   }
   if (self.trailingEdgePaddingOverride) {
     horizontalPositioningReference.trailingEdgePadding =
-        (CGFloat)[self.trailingEdgePaddingOverride doubleValue];
+        self.trailingEdgePaddingOverride.doubleValue;
   }
   if (self.horizontalInterItemSpacingOverride) {
     horizontalPositioningReference.horizontalInterItemSpacing =
-        (CGFloat)[self.horizontalInterItemSpacingOverride doubleValue];
+        self.horizontalInterItemSpacingOverride.doubleValue;
   }
   return horizontalPositioningReference;
 }
@@ -596,7 +597,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 #pragma mark Label
 
 - (void)animateLabel {
-  NSTimeInterval animationDuration = self.labelPositionChanged ? self.animationDuration : 0.0f;
+  NSTimeInterval animationDuration = self.labelPositionChanged ? self.animationDuration : 0.0;
   __weak MDCBaseTextField *weakSelf = self;
   [MDCTextControlLabelAnimation animateLabel:self.label
                                        state:self.labelPosition
@@ -629,11 +630,17 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 
 - (void)applyColorViewModel:(MDCTextControlColorViewModel *)colorViewModel
           withLabelPosition:(MDCTextControlLabelPosition)labelPosition {
-  UIColor *labelColor = [UIColor clearColor];
-  if (labelPosition == MDCTextControlLabelPositionNormal) {
-    labelColor = colorViewModel.normalLabelColor;
-  } else if (labelPosition == MDCTextControlLabelPositionFloating) {
-    labelColor = colorViewModel.floatingLabelColor;
+  UIColor *labelColor;
+  switch (labelPosition) {
+    case MDCTextControlLabelPositionNone:
+      labelColor = [UIColor clearColor];
+      break;
+    case MDCTextControlLabelPositionFloating:
+      labelColor = colorViewModel.floatingLabelColor ?: self.tintColor;
+      break;
+    case MDCTextControlLabelPositionNormal:
+      labelColor = colorViewModel.normalLabelColor;
+      break;
   }
   if (![self.textColor isEqual:colorViewModel.textColor]) {
     self.textColor = colorViewModel.textColor;
@@ -677,13 +684,13 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
   if (self.isAccessibilityElement) {
     return [super accessibilityElementCount];
   } else {
-    return [self accessibilityElements].count;
+    return self.accessibilityElements.count;
   }
 }
 
 - (NSString *)accessibilityLabel {
   if (self.isAccessibilityElement) {
-    NSString *superAccessibilityLabel = [super accessibilityLabel];
+    NSString *superAccessibilityLabel = super.accessibilityLabel;
     if (superAccessibilityLabel.length > 0) {
       return superAccessibilityLabel;
     }
@@ -705,13 +712,13 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 
     return nil;
   } else {
-    return [super accessibilityLabel];
+    return super.accessibilityLabel;
   }
 }
 
 - (NSString *)accessibilityValue {
-  NSString *accessibilityValue = [super accessibilityValue];
-  NSString *accessibilityLabel = [self accessibilityLabel];
+  NSString *accessibilityValue = super.accessibilityValue;
+  NSString *accessibilityLabel = self.accessibilityLabel;
   // Voice Over reads both the accessibility label and the accessibility value in succession.
   // If no value is set on the text field, the accessibility value will be the placeholder.
   // This means that if a placeholder is set and it is equal to the label text
@@ -729,9 +736,9 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
 
 - (NSArray *)accessibilityElements {
   if (self.isAccessibilityElement) {
-    return [super accessibilityElements];
+    return super.accessibilityElements;
   } else {
-    NSMutableArray *mutableElements = [[super accessibilityElements] mutableCopy];
+    NSMutableArray *mutableElements = [super.accessibilityElements mutableCopy];
     if (self.label.isAccessibilityElement &&
         self.labelPosition != MDCTextControlLabelPositionNone) {
       // The label should be before the system text field element
@@ -772,7 +779,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
     }
     return [self convertRect:bounds toCoordinateSpace:self.window.screen.coordinateSpace];
   } else {
-    return [super accessibilityFrame];
+    return super.accessibilityFrame;
   }
 }
 
@@ -789,7 +796,7 @@ static char *const kKVOContextMDCBaseTextField = "kKVOContextMDCBaseTextField";
   return colorViewModel.normalLabelColor;
 }
 
-- (void)setFloatingLabelColor:(nonnull UIColor *)labelColor forState:(MDCTextControlState)state {
+- (void)setFloatingLabelColor:(nullable UIColor *)labelColor forState:(MDCTextControlState)state {
   MDCTextControlColorViewModel *colorViewModel = [self textControlColorViewModelForState:state];
   colorViewModel.floatingLabelColor = labelColor;
   [self setNeedsLayout];

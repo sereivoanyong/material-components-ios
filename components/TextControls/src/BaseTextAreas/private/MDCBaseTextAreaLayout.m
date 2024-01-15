@@ -42,6 +42,8 @@ static const CGFloat kGradientBlurLength = (CGFloat)4.0;
 @property(nonatomic, assign) BOOL placeholderLabelHidden;
 @property(nonatomic, assign) CGRect placeholderLabelFrame;
 
+@property(nonatomic, assign) CGFloat scale;
+
 @end
 
 @implementation MDCBaseTextAreaLayout
@@ -67,10 +69,12 @@ static const CGFloat kGradientBlurLength = (CGFloat)4.0;
           assistiveLabelDrawPriority:
               (MDCTextControlAssistiveLabelDrawPriority)assistiveLabelDrawPriority
     customAssistiveLabelDrawPriority:(CGFloat)normalizedCustomAssistiveLabelDrawPriority
+                               scale:(CGFloat)scale
                                isRTL:(BOOL)isRTL
                            isEditing:(BOOL)isEditing {
   self = [super init];
   if (self) {
+    self.scale = scale;
     [self calculateLayoutWithSize:size
             verticalPositioningReference:verticalPositioningReference
           horizontalPositioningReference:horizontalPositioningReference
@@ -253,6 +257,7 @@ static const CGFloat kGradientBlurLength = (CGFloat)4.0;
                    trailingEdgePadding:trailingEdgePadding
            paddingAboveAssistiveLabels:verticalPositioningReference.paddingAboveAssistiveLabels
            paddingBelowAssistiveLabels:verticalPositioningReference.paddingBelowAssistiveLabels
+                                 scale:self.scale
                                  isRTL:isRTL];
   self.assistiveLabelViewFrame =
       CGRectMake(0, containerHeight, size.width, self.assistiveLabelViewLayout.calculatedHeight);
@@ -311,7 +316,7 @@ static const CGFloat kGradientBlurLength = (CGFloat)4.0;
                                minX:(CGFloat)minX
                     containerHeight:(CGFloat)containerHeight {
   CGFloat sideViewHeight = CGRectGetHeight(sideView.bounds);
-  CGFloat minY = (0.5f * containerHeight) - (0.5f * sideViewHeight);
+  CGFloat minY = (0.5 * containerHeight) - (0.5 * sideViewHeight);
   return CGRectMake(minX, minY, CGRectGetWidth(sideView.bounds), sideViewHeight);
 }
 
@@ -344,7 +349,7 @@ static const CGFloat kGradientBlurLength = (CGFloat)4.0;
 }
 
 - (CGFloat)textHeightWithFont:(UIFont *)font {
-  return (CGFloat)ceil((double)font.lineHeight);
+  return ceil(font.lineHeight * self.scale) / self.scale;
 }
 
 - (CGSize)textSizeWithText:(NSString *)text font:(UIFont *)font maxWidth:(CGFloat)maxWidth {

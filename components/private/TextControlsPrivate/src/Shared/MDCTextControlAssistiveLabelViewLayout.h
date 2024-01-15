@@ -40,6 +40,7 @@
                  trailingEdgePadding:(CGFloat)trailingEdgePadding
          paddingAboveAssistiveLabels:(CGFloat)paddingAboveAssistiveLabels
          paddingBelowAssistiveLabels:(CGFloat)paddingBelowAssistiveLabels
+                               scale:(CGFloat)scale
                                isRTL:(BOOL)isRTL;
 
 @end

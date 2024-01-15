@@ -15,30 +15,25 @@
 #import <UIKit/UIKit.h>
 
 #import "MDCTextControl.h"
-#import "MDCTextControlStyleUnderlined.h"
+#import "MDCTextControlStyleOutlined.h"
 
 /**
 This style object is used by MDCTextControls adopting the Material Filled style.
 */
-@interface MDCTextControlStyleFilled : MDCTextControlStyleUnderlined <MDCTextControlStyle>
-
-/**
-The corner radius of the top two corners.
-*/
-@property(nonatomic, assign) CGFloat topCornerRadius;
+@interface MDCTextControlStyleFilled : MDCTextControlStyleOutlined <MDCTextControlStyle>
 
 /**
 Sets the filled background color color for a given state.
-@param filledBackgroundColor The UIColor for the given state.
+@param filledBackgroundColor The UIColor for the given state. Nil means `tintColor`.
 @param state The MDCTextControlState.
 */
-- (void)setFilledBackgroundColor:(nonnull UIColor *)filledBackgroundColor
+- (void)setFilledBackgroundColor:(nullable UIColor *)filledBackgroundColor
                         forState:(MDCTextControlState)state;
 
 /**
 Returns the filled background color for a given state.
 @param state The MDCTextControlState.
 */
-- (nonnull UIColor *)filledBackgroundColorForState:(MDCTextControlState)state;
+- (nullable UIColor *)filledBackgroundColorForState:(MDCTextControlState)state;
 
 @end

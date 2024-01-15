@@ -19,6 +19,9 @@
 #import "MaterialTextControlsPrivate+Shared.h"
 
 @interface MDCOutlinedTextArea (Private) <MDCTextControl>
+
+@property(nonatomic, strong, nonnull) MDCTextControlStyleOutlined *containerStyle;
+
 @end
 
 @interface MDCOutlinedTextArea ()
@@ -47,30 +50,31 @@
 }
 
 - (void)setContainerRadius:(CGFloat)containerRadius {
-  self.outlinedStyle.outlineCornerRadius = containerRadius;
+  self.containerStyle.outlineCornerRadius = containerRadius;
 }
 
 - (CGFloat)containerRadius {
-  return self.outlinedStyle.outlineCornerRadius;
+  return self.containerStyle.outlineCornerRadius;
 }
 
 #pragma mark Stateful Color APIs
 
-- (void)setOutlineColor:(nonnull UIColor *)outlineColor forState:(MDCTextControlState)state {
-  [self.outlinedStyle setOutlineColor:outlineColor forState:state];
+- (void)setOutlineColor:(nullable UIColor *)outlineColor forState:(MDCTextControlState)state {
+  [self.containerStyle setOutlineColor:outlineColor forState:state];
   [self setNeedsLayout];
 }
 
-- (nonnull UIColor *)outlineColorForState:(MDCTextControlState)state {
-  return [self.outlinedStyle outlineColorForState:state];
+- (nullable UIColor *)outlineColorForState:(MDCTextControlState)state {
+  return [self.containerStyle outlineColorForState:state];
 }
 
-- (MDCTextControlStyleOutlined *)outlinedStyle {
-  MDCTextControlStyleOutlined *outlinedStyle = nil;
-  if ([self.containerStyle isKindOfClass:[MDCTextControlStyleOutlined class]]) {
-    outlinedStyle = (MDCTextControlStyleOutlined *)self.containerStyle;
-  }
-  return outlinedStyle;
+- (void)setOutlineLineWidth:(CGFloat)outlineLineWidth forState:(MDCTextControlState)state {
+  [self.containerStyle setOutlineLineWidth:outlineLineWidth forState:state];
+  [self setNeedsLayout];
+}
+
+- (CGFloat)outlineLineWidthForState:(MDCTextControlState)state {
+  return [self.containerStyle outlineLineWidthForState:state];
 }
 
 @end

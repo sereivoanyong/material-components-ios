@@ -28,10 +28,10 @@
 
 /**
  Sets the outline color for a given state.
- @param outlineColor The UIColor for the given state.
+ @param outlineColor The UIColor for the given state. Nil means `tintColor`.
  @param state The MDCTextControlState.
  */
-- (void)setOutlineColor:(nonnull UIColor *)outlineColor forState:(MDCTextControlState)state;
+- (void)setOutlineColor:(nullable UIColor *)outlineColor forState:(MDCTextControlState)state;
 
 /**
  Returns the outline color for a given state.
@@ -39,6 +39,10 @@
 
  The default values are sensible black values.
  */
-- (nonnull UIColor *)outlineColorForState:(MDCTextControlState)state;
+- (nullable UIColor *)outlineColorForState:(MDCTextControlState)state;
+
+- (void)setOutlineLineWidth:(CGFloat)outlineLineWidth forState:(MDCTextControlState)state;
+
+- (CGFloat)outlineLineWidthForState:(MDCTextControlState)state;
 
 @end

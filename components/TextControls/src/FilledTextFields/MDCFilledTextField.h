@@ -27,11 +27,30 @@
 @property(nonatomic, assign) UITextBorderStyle borderStyle NS_UNAVAILABLE;
 
 /**
- Sets the filled background color for a given state.
- @param filledBackgroundColor The UIColor for the given state.
+ Sets the outline color for a given state.
+ @param outlineColor The UIColor for the given state. Nil means `tintColor`.
  @param state The MDCTextControlState.
  */
-- (void)setFilledBackgroundColor:(nonnull UIColor *)filledBackgroundColor
+- (void)setOutlineColor:(nullable UIColor *)outlineColor forState:(MDCTextControlState)state;
+
+/**
+ Returns the outline color for a given state.
+ @param state The MDCTextControlState.
+
+ The default values are sensible black values.
+ */
+- (nullable UIColor *)outlineColorForState:(MDCTextControlState)state;
+
+- (void)setOutlineLineWidth:(CGFloat)outlineLineWidth forState:(MDCTextControlState)state;
+
+- (CGFloat)outlineLineWidthForState:(MDCTextControlState)state;
+
+/**
+ Sets the filled background color for a given state.
+ @param filledBackgroundColor The UIColor for the given state. Nil means `tintColor`.
+ @param state The MDCTextControlState.
+ */
+- (void)setFilledBackgroundColor:(nullable UIColor *)filledBackgroundColor
                         forState:(MDCTextControlState)state;
 /**
  Returns the filled background color for a given state.
@@ -39,21 +58,6 @@
 
  The default value is a light shade of gray.
  */
-- (nonnull UIColor *)filledBackgroundColorForState:(MDCTextControlState)state;
-
-/**
- Sets the underline color for a given state.
- @param underlineColor The UIColor for the given state.
- @param state The MDCTextControlState.
- */
-- (void)setUnderlineColor:(nonnull UIColor *)underlineColor forState:(MDCTextControlState)state;
-
-/**
- Returns the underline color for a given state.
- @param state The MDCTextControlState.
-
- The default values are sensible shades of black.
- */
-- (nonnull UIColor *)underlineColorForState:(MDCTextControlState)state;
+- (nullable UIColor *)filledBackgroundColorForState:(MDCTextControlState)state;
 
 @end

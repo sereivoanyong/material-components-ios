@@ -21,6 +21,9 @@
 #import "MaterialTextControlsPrivate+Shared.h"
 
 @interface MDCFilledTextField (Private) <MDCTextControl>
+
+@property(nonatomic, strong, nonnull) MDCTextControlStyleFilled *containerStyle;
+
 @end
 
 @interface MDCFilledTextField ()
@@ -52,42 +55,41 @@
 }
 
 - (void)setContainerRadius:(CGFloat)containerRadius {
-  self.filledStyle.topCornerRadius = containerRadius;
+  self.containerStyle.outlineCornerRadius = containerRadius;
 }
 
 - (CGFloat)containerRadius {
-  return self.filledStyle.topCornerRadius;
+  return self.containerStyle.outlineCornerRadius;
 }
 
 #pragma mark Stateful Color APIs
 
-- (void)setFilledBackgroundColor:(nonnull UIColor *)filledBackgroundColor
+- (void)setOutlineColor:(nullable UIColor *)outlineColor forState:(MDCTextControlState)state {
+  [self.containerStyle setOutlineColor:outlineColor forState:state];
+  [self setNeedsLayout];
+}
+
+- (nullable UIColor *)outlineColorForState:(MDCTextControlState)state {
+  return [self.containerStyle outlineColorForState:state];
+}
+
+- (void)setOutlineLineWidth:(CGFloat)outlineLineWidth forState:(MDCTextControlState)state {
+  [self.containerStyle setOutlineLineWidth:outlineLineWidth forState:state];
+  [self setNeedsLayout];
+}
+
+- (CGFloat)outlineLineWidthForState:(MDCTextControlState)state {
+  return [self.containerStyle outlineLineWidthForState:state];
+}
+
+- (void)setFilledBackgroundColor:(nullable UIColor *)filledBackgroundColor
                         forState:(MDCTextControlState)state {
-  [self.filledStyle setFilledBackgroundColor:filledBackgroundColor forState:state];
+  [self.containerStyle setFilledBackgroundColor:filledBackgroundColor forState:state];
   [self setNeedsLayout];
 }
 
-- (nonnull UIColor *)filledBackgroundColorForState:(MDCTextControlState)state {
-  return [self.filledStyle filledBackgroundColorForState:state];
-}
-
-- (void)setUnderlineColor:(nonnull UIColor *)underlineColor forState:(MDCTextControlState)state {
-  [self.filledStyle setUnderlineColor:underlineColor forState:state];
-  [self setNeedsLayout];
-}
-
-- (nonnull UIColor *)underlineColorForState:(MDCTextControlState)state {
-  return [self.filledStyle underlineColorForState:state];
-}
-
-#pragma mark Private Helpers
-
-- (MDCTextControlStyleFilled *)filledStyle {
-  MDCTextControlStyleFilled *filledStyle = nil;
-  if ([self.containerStyle isKindOfClass:[MDCTextControlStyleFilled class]]) {
-    filledStyle = (MDCTextControlStyleFilled *)self.containerStyle;
-  }
-  return filledStyle;
+- (nullable UIColor *)filledBackgroundColorForState:(MDCTextControlState)state {
+  return [self.containerStyle filledBackgroundColorForState:state];
 }
 
 @end

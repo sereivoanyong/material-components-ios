@@ -35,9 +35,9 @@
  */
 @property(strong, nonatomic, nonnull) UIColor *trailingAssistiveLabelColor;
 /**
- The color of the contained input view's label when it's floating.
+ The color of the contained input view's label when it's floating. Nil means `tintColor`.
  */
-@property(strong, nonatomic, nonnull) UIColor *floatingLabelColor;
+@property(strong, nonatomic, nullable) UIColor *floatingLabelColor;
 /**
  The color of the contained input view's label when it's in its normal, i.e. not floating, state.
  */

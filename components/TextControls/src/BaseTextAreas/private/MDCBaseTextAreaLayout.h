@@ -80,6 +80,7 @@ API_DEPRECATED_BEGIN(
           assistiveLabelDrawPriority:
               (MDCTextControlAssistiveLabelDrawPriority)assistiveLabelDrawPriority
     customAssistiveLabelDrawPriority:(CGFloat)normalizedCustomAssistiveLabelDrawPriority
+                               scale:(CGFloat)scale
                                isRTL:(BOOL)isRTL
                            isEditing:(BOOL)isEditing;
 

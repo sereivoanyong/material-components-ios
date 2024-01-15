@@ -22,10 +22,10 @@
 */
 static const CGFloat kMinPaddingAroundTextWhenNoFloatingLabel = 4.0f;
 static const CGFloat kMaxPaddingAroundTextWhenNoFloatingLabel = 10.0f;
-static const CGFloat kMinPaddingBetweenFloatingLabelAndEditingText = (CGFloat)3.0;
-static const CGFloat kMaxPaddingBetweenFloatingLabelAndEditingText = (CGFloat)12.0;
-static const CGFloat kMinPaddingBelowAssistiveLabels = (CGFloat)3.0;
-static const CGFloat kMaxPaddingBelowAssistiveLabels = (CGFloat)6.0;
+static const CGFloat kMinPaddingBetweenFloatingLabelAndEditingText = 3.0f;
+static const CGFloat kMaxPaddingBetweenFloatingLabelAndEditingText = 12.0f;
+static const CGFloat kMinPaddingBelowAssistiveLabels = 3.0f;
+static const CGFloat kMaxPaddingBelowAssistiveLabels = 6.0f;
 
 /**
  For slightly more context on what this class is doing look at

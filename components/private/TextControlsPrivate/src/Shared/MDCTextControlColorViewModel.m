@@ -34,23 +34,32 @@
 }
 
 - (void)setUpColorsWithState:(MDCTextControlState)state {
-  UIColor *textColor = [UIColor blackColor];
-  UIColor *floatingLabelColor = [UIColor blackColor];
-  UIColor *normalLabelColor = [UIColor darkGrayColor];
-  UIColor *leadingAssistiveLabelColor = [UIColor darkGrayColor];
-  UIColor *trailingAssistiveLabelColor = [UIColor darkGrayColor];
+  UIColor *textColor;
+  UIColor *floatingLabelColor;
+  UIColor *normalLabelColor;
+  UIColor *leadingAssistiveLabelColor;
+  UIColor *trailingAssistiveLabelColor;
 
-  textColor = [UIColor labelColor];
-  floatingLabelColor = [UIColor labelColor];
-  normalLabelColor = [UIColor labelColor];
-  leadingAssistiveLabelColor = [UIColor labelColor];
-  trailingAssistiveLabelColor = [UIColor labelColor];
+  if (@available(iOS 13.0, *)) {
+    textColor = [UIColor labelColor];
+    floatingLabelColor = [UIColor placeholderTextColor];
+    normalLabelColor = [UIColor placeholderTextColor];
+    leadingAssistiveLabelColor = [UIColor secondaryLabelColor];
+    trailingAssistiveLabelColor = [UIColor secondaryLabelColor];
+  } else {
+    textColor = [UIColor blackColor];
+    floatingLabelColor = [UIColor darkGrayColor];
+    normalLabelColor = [UIColor darkGrayColor];
+    leadingAssistiveLabelColor = [UIColor darkGrayColor];
+    trailingAssistiveLabelColor = [UIColor darkGrayColor];
+  }
 
   CGFloat disabledAlpha = (CGFloat)0.60;
   switch (state) {
     case MDCTextControlStateNormal:
       break;
     case MDCTextControlStateEditing:
+      floatingLabelColor = nil;
       break;
     case MDCTextControlStateDisabled:
       textColor = [textColor colorWithAlphaComponent:disabledAlpha];

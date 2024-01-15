@@ -21,6 +21,7 @@
 @property(nonatomic, assign) CGRect leadingAssistiveLabelFrame;
 @property(nonatomic, assign) CGRect trailingAssistiveLabelFrame;
 @property(nonatomic, assign) CGFloat calculatedHeight;
+@property(nonatomic, assign) CGFloat scale;
 
 @end
 
@@ -38,9 +39,11 @@
                  trailingEdgePadding:(CGFloat)trailingEdgePadding
          paddingAboveAssistiveLabels:(CGFloat)paddingAboveAssistiveLabels
          paddingBelowAssistiveLabels:(CGFloat)paddingBelowAssistiveLabels
+                               scale:(CGFloat)scale
                                isRTL:(BOOL)isRTL {
   self = [super init];
   if (self) {
+    self.scale = scale;
     [self calculateLayoutWithSuperviewWidth:superviewWidth
                       leadingAssistiveLabel:leadingAssistiveLabel
                      trailingAssistiveLabel:trailingAssistiveLabel
@@ -174,7 +177,7 @@
 
 - (BOOL)isLabelMultilineWithLabel:(UILabel *)label size:(CGSize)size {
   CGFloat lineHeight = label.font.lineHeight;
-  return round((double)(size.height / lineHeight)) > 1;
+  return round((size.height / lineHeight) * self.scale) / self.scale > 1;
 }
 
 @end

@@ -1944,7 +1944,7 @@ Pod::Spec.new do |mdc|
       component.dependency "MaterialComponents/AnimationTiming"
       component.dependency "MaterialComponents/private/Math"
       component.dependency "MaterialComponents/private/TextControlsPrivate+Shared"
-      component.dependency "MaterialComponents/private/TextControlsPrivate+UnderlinedStyle"
+      component.dependency "MaterialComponents/private/TextControlsPrivate+OutlinedStyle"
     end
 
     private_spec.subspec "TextControlsPrivate+OutlinedStyle" do |component|
