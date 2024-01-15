@@ -15,14 +15,6 @@
 
 #import "Foundation/Foundation.h"
 
-API_DEPRECATED_BEGIN(
-    "🕘 Schedule time to migrate. "
-    "Use branded UITextField or UITextView instead: go/material-ios-text-fields/gm2-migration. "
-    "This is go/material-ios-migrations#not-scriptable 🕘",
-    ios(12, 12))
-
-NS_ASSUME_NONNULL_BEGIN
-
 /**
  This enum describes different approaches to vertically positioning side views (@c leadingView, @c
  trailingView, and the clear button) in a text field. MDCBaseTextFieldLayout uses this to help it
@@ -38,7 +30,3 @@ typedef NS_ENUM(NSUInteger, MDCTextControlTextFieldSideViewAlignment) {
    */
   MDCTextControlTextFieldSideViewAlignmentAlignedWithText,
 };
-
-NS_ASSUME_NONNULL_END
-
-API_DEPRECATED_END

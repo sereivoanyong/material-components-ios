@@ -17,12 +17,6 @@
 
 #import "MDCTextControl.h"
 
-API_DEPRECATED_BEGIN(
-    "🕘 Schedule time to migrate. "
-    "Use branded UITextField or UITextView instead: go/material-ios-text-fields/gm2-migration. "
-    "This is go/material-ios-migrations#not-scriptable 🕘",
-    ios(12, 12))
-
 // TODO: When the MDCBaseTextField subclass that makes use of this style (and the path drawing logic
 // inside it) lands there should be snapshot tests for it.
 /**
@@ -49,5 +43,3 @@ Returns the outline color for a given state.
 - (nonnull UIColor *)outlineColorForState:(MDCTextControlState)state;
 
 @end
-
-API_DEPRECATED_END

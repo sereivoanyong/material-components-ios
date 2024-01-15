@@ -18,12 +18,6 @@
 #import "MDCTextControlVerticalPositioningReference.h"
 #import "MDCTextControlVerticalPositioningReferenceUnderlined.h"
 
-API_DEPRECATED_BEGIN(
-    "🕘 Schedule time to migrate. "
-    "Use branded UITextField or UITextView instead: go/material-ios-text-fields/gm2-migration. "
-    "This is go/material-ios-migrations#not-scriptable 🕘",
-    ios(12, 12))
-
 @interface MDCTextControlVerticalPositioningReferenceFilled
     : NSObject <MDCTextControlVerticalPositioningReference>
 
@@ -36,5 +30,3 @@ API_DEPRECATED_BEGIN(
                         isMultilineTextControl:(BOOL)isMultilineTextControl;
 
 @end
-
-API_DEPRECATED_END

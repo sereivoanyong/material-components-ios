@@ -15,12 +15,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-API_DEPRECATED_BEGIN(
-    "🕘 Schedule time to migrate. "
-    "Use branded UITextField or UITextView instead: go/material-ios-text-fields/gm2-migration. "
-    "This is go/material-ios-migrations#not-scriptable 🕘",
-    ios(12, 12))
-
 /**
  Dictates the relative importance of the underline labels, and the order in which they are laid out.
  It is important to note that at the time this documentation is being written this type is not
@@ -46,5 +40,3 @@ typedef NS_ENUM(NSUInteger, MDCTextControlAssistiveLabelDrawPriority) {
    */
   MDCTextControlAssistiveLabelDrawPriorityCustom,
 };
-
-API_DEPRECATED_END
