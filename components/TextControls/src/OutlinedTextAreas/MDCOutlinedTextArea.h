@@ -19,7 +19,7 @@
 /**
  An implementation of a Material outlined text area.
  */
-__attribute__((objc_subclassing_restricted)) @interface MDCOutlinedTextArea : MDCBaseTextArea
+@interface MDCOutlinedTextArea : MDCBaseTextArea
 
 /**
  Sets the outline color for a given state.

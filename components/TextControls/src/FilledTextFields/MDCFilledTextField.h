@@ -25,7 +25,6 @@ API_DEPRECATED_BEGIN(
 /**
  An implementation of a Material filled text field.
  */
-__attribute__((objc_subclassing_restricted))
 @interface MDCFilledTextField : MDCBaseTextField
 
 /**

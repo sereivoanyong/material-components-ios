@@ -19,7 +19,7 @@
 /**
  An implementation of a Material filled text area.
  */
-__attribute__((objc_subclassing_restricted)) @interface MDCFilledTextArea : MDCBaseTextArea
+@interface MDCFilledTextArea : MDCBaseTextArea
 
 /**
  Sets the filled background color for a given state.
